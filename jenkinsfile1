@@ -1,0 +1,36 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = "adisree/java-app"
+    IMAGE_TAG  = "1.0"
+    CREDENTIALS_ID = credentials('dockerhub')
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        git 'https://github.com/Adithya02-alt/jj34.git'
+      }
+    }
+
+    stage('Build with Maven') {
+      steps {
+        sh 'mvn clean package'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
+      }
+    }
+  }
+}
